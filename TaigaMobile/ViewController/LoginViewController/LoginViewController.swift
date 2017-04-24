@@ -67,7 +67,7 @@ class LoginViewController: UIViewController {
         })
         .addDisposableTo(disposeBag)
         
-        viewModel?.rx_inputValid?.bindTo(loginButton.rx.backgroundColorButton)
+        viewModel?.rx_inputValid?.bind(to: loginButton.rx.backgroundColorButton)
         .addDisposableTo(disposeBag)
     }
 }
@@ -85,7 +85,7 @@ struct LoginViewModel {
             .shareReplay(1) // without this map would be executed once for each binding, rx is stateless by default
         
         let passwordValid = rx_password
-            .map { $0.characters.count >= 2 }
+            .map { $0.characters.count >= 6 }
             .shareReplay(1)
         
         rx_inputValid = Observable.combineLatest(usernameValid, passwordValid) { $0 && $1 }
