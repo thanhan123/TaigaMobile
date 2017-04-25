@@ -11,12 +11,17 @@ import UIKit
 
 import RxSwift
 import RxCocoa
+import Moya
+import Moya_ModelMapper
+import Mapper
 
 class LoginViewController: UIViewController {
     @IBOutlet weak var usernameTxtField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var loginGithubButton: UIButton!
+    
+    var provider: RxMoyaProvider<Taiga>!
     
     let disposeBag = DisposeBag()
     
@@ -56,19 +61,74 @@ class LoginViewController: UIViewController {
     }
     
     func bindUI() {
-        viewModel = LoginViewModel(rx_username: rx_usernameTxtField, rx_password: rx_passwordTxtField, rx_inputValid: nil)
+        let endpointClosure = { (target: Taiga) -> Endpoint<Taiga> in
+            let defaultEndpoint = MoyaProvider.defaultEndpointMapping(for: target)
+            return defaultEndpoint.adding(newHTTPHeaderFields: ["Content-Type": "application/json"])
+        }
+        provider = RxMoyaProvider<Taiga>(endpointClosure: endpointClosure)
+        
+        viewModel = LoginViewModel(rx_username: rx_usernameTxtField, rx_password: rx_passwordTxtField, rx_inputValid: nil, provider: provider)
         viewModel?.bindModel()
         
         loginButton.rx.tap
         .subscribe(onNext: { [unowned self] in
             
-            print("login button tap")
+            self.viewModel?.loginTaigaBy(username: self.usernameTxtField.text!, password: self.passwordTextField.text!)
+            .subscribe(onNext: { (user) in
+                
+            })
+            .addDisposableTo(self.disposeBag)
         
         })
         .addDisposableTo(disposeBag)
         
         viewModel?.rx_inputValid?.bind(to: loginButton.rx.backgroundColorButton)
         .addDisposableTo(disposeBag)
+        
+        loginGithubButton.rx.tap
+        .subscribe(onNext: {
+            
+            let apiManager = TMAPIManager()
+            apiManager.loginGitHub()
+            
+        })
+        .addDisposableTo(disposeBag)
+        
+//        NotificationCenter.default.rx.notification(Notification.Name(rawValue: "GITHUB_LOGIN_CODE"), object: nil)
+//        .subscribe(onNext: { [unowned self] notif in
+//            let dict = notif.userInfo
+//            let url = dict?["url"] as? URL
+//            let code = url?.relativeString.components(separatedBy: "?")[1].components(separatedBy: "&")[0].components(separatedBy: "=")[1]
+//
+//            self.viewModel?.loginTaigaByGithub(code: code!)
+//            .subscribe(onNext: { user in
+////                print("************** \(user!)")
+//            })
+//            .addDisposableTo(self.disposeBag)
+//        })
+//        .addDisposableTo(disposeBag)
+        
+    }
+}
+
+struct User: Mappable {
+    
+    let authToken: String
+    let bio: String
+    let title: String
+    let email: String
+    let fullName: String
+    let username: String
+    let photo: URL
+    
+    init(map: Mapper) throws {
+        try authToken = map.from("auth_token")
+        try bio = map.from("bio")
+        try title = map.from("title")
+        try email = map.from("email")
+        try fullName = map.from("fullName")
+        try username = map.from("username")
+        try photo = map.from("photo")
     }
 }
 
@@ -76,6 +136,7 @@ struct LoginViewModel {
     let rx_username: Observable<String>
     let rx_password: Observable<String>
     var rx_inputValid: Observable<ValidationResult>?
+    var provider: RxMoyaProvider<Taiga>!
     
     let disposeBag = DisposeBag()
     
@@ -93,6 +154,20 @@ struct LoginViewModel {
                 return valid ? .ok : .failed
             })
             .shareReplay(1)
+    }
+    
+    func loginTaigaByGithub(code: String) -> Observable<User?> {
+        return self.provider
+            .request(Taiga.githubLogin(code: code))
+            .debug()
+            .mapObjectOptional(type: User.self)
+    }
+    
+    func loginTaigaBy(username: String, password: String) -> Observable<User?> {
+        return self.provider
+            .request(Taiga.normalLogin(username: username, password: password))
+            .debug()
+            .mapObjectOptional(type: User.self)
     }
 }
 

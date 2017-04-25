@@ -7,9 +7,9 @@ target 'TaigaMobile' do
 
   pod 'RxSwift'
   pod 'RxCocoa'
-  pod 'RxSwiftExt'
   pod 'RxOptional'
-  pod 'Moya'
+  pod 'OAuthSwift', '~> 1.1.0'
+  pod 'Moya-ModelMapper/RxSwift', '~> 4.1.0'
   pod 'Typhoon'
   
 end
