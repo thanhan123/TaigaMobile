@@ -14,8 +14,23 @@ import RxCocoa
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    
+    func changeRootToViewController(vc: UIViewController) {
+        if window?.rootViewController == nil {
+            window?.rootViewController = vc
+            return
+        }
+        
+        window?.rootViewController = vc
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        if User.getCurrentUser() != nil {
+            let mainVC = Utils.mainStoryBoard().instantiateViewController(withIdentifier: "MainViewController")
+            let navVC = UINavigationController.init(rootViewController: mainVC)
+            changeRootToViewController(vc: navVC)
+        }
         
         return true
     }

@@ -15,6 +15,8 @@
 		D11487C51E9F2AE700984B0E /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11487C41E9F2AE700984B0E /* LoginViewController.swift */; };
 		D14F35FA1EA46D4C00C60A89 /* TMAPIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D14F35F91EA46D4C00C60A89 /* TMAPIManager.swift */; };
 		D178E9CF1EAF6B0D0027DEEC /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D178E9CE1EAF6B0D0027DEEC /* MainViewController.swift */; };
+		D178E9D21EB059580027DEEC /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D178E9D11EB059580027DEEC /* Utils.swift */; };
+		D178E9D41EB087D90027DEEC /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = D178E9D31EB087D90027DEEC /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		D11487C41E9F2AE700984B0E /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		D14F35F91EA46D4C00C60A89 /* TMAPIManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TMAPIManager.swift; sourceTree = "<group>"; };
 		D178E9CE1EAF6B0D0027DEEC /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		D178E9D11EB059580027DEEC /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		D178E9D31EB087D90027DEEC /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DB2061876BC8B25383BF921F /* Pods_TaigaMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TaigaMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCAB40A8C2324894E2D0061A /* Pods-TaigaMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TaigaMobile.release.xcconfig"; path = "Pods/Target Support Files/Pods-TaigaMobile/Pods-TaigaMobile.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -73,6 +77,7 @@
 		D11487A11E9F200D00984B0E /* TaigaMobile */ = {
 			isa = PBXGroup;
 			children = (
+				D178E9D01EB059480027DEEC /* Utils */,
 				D14F35F81EA46D3500C60A89 /* API */,
 				D11487B41E9F29AB00984B0E /* Application */,
 				D11487B61E9F29AB00984B0E /* Model */,
@@ -94,6 +99,7 @@
 		D11487B61E9F29AB00984B0E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D178E9D31EB087D90027DEEC /* User.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -147,6 +153,14 @@
 				D178E9CE1EAF6B0D0027DEEC /* MainViewController.swift */,
 			);
 			path = MainViewController;
+			sourceTree = "<group>";
+		};
+		D178E9D01EB059480027DEEC /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				D178E9D11EB059580027DEEC /* Utils.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 		F768885C9ADB7072BC0E500F /* Pods */ = {
@@ -281,7 +295,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D178E9D21EB059580027DEEC /* Utils.swift in Sources */,
 				D11487C51E9F2AE700984B0E /* LoginViewController.swift in Sources */,
+				D178E9D41EB087D90027DEEC /* User.swift in Sources */,
 				D11487BE1E9F29AB00984B0E /* AppDelegate.swift in Sources */,
 				D14F35FA1EA46D4C00C60A89 /* TMAPIManager.swift in Sources */,
 				D178E9CF1EAF6B0D0027DEEC /* MainViewController.swift in Sources */,

@@ -38,7 +38,6 @@ class LoginViewController: UIViewController {
                 }
                 .distinctUntilChanged()
     }
-    
     var rx_passwordTxtField: Observable<String> {
         return passwordTextField
             .rx
@@ -52,11 +51,22 @@ class LoginViewController: UIViewController {
             }
             .distinctUntilChanged()
     }
+    var rx_loginButton: Observable<(String, String)> {
+        return loginButton
+            .rx
+            .tap
+            .map(){
+                return (self.usernameTxtField.text!, self.passwordTextField.text!)
+            }
+    }
     
     var viewModel: LoginViewModel? = nil
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "Login"
+        
         bindUI()
     }
     
@@ -67,32 +77,30 @@ class LoginViewController: UIViewController {
         }
         provider = RxMoyaProvider<Taiga>(endpointClosure: endpointClosure)
         
-        viewModel = LoginViewModel(rx_username: rx_usernameTxtField, rx_password: rx_passwordTxtField, rx_inputValid: nil, provider: provider)
+        viewModel = LoginViewModel(rx_username: rx_usernameTxtField, rx_password: rx_passwordTxtField, rx_inputValid: nil, rx_login: rx_loginButton, provider: provider)
         viewModel?.bindModel()
-        
-        loginButton.rx.tap
-        .subscribe(onNext: { [unowned self] in
-            
-            self.viewModel?.loginTaigaBy(username: self.usernameTxtField.text!, password: self.passwordTextField.text!)
-            .subscribe(onNext: { (user) in
-                
-            })
-            .addDisposableTo(self.disposeBag)
-        
-        })
-        .addDisposableTo(disposeBag)
         
         viewModel?.rx_inputValid?.bind(to: loginButton.rx.backgroundColorButton)
         .addDisposableTo(disposeBag)
         
-        loginGithubButton.rx.tap
-        .subscribe(onNext: {
-            
-            let apiManager = TMAPIManager()
-            apiManager.loginGitHub()
-            
+        viewModel?.loginNormal().subscribe(onNext: { [unowned self] success in
+            if success {
+                let mainVC = Utils.mainStoryBoard().instantiateViewController(withIdentifier: "MainViewController")
+                self.navigationController?.pushViewController(mainVC, animated: true)
+            } else {
+                print("Login Failed")
+            }
         })
         .addDisposableTo(disposeBag)
+        
+//        loginGithubButton.rx.tap
+//        .subscribe(onNext: {
+//            
+//            let apiManager = TMAPIManager()
+//            apiManager.loginGitHub()
+//            
+//        })
+//        .addDisposableTo(disposeBag)
         
 //        NotificationCenter.default.rx.notification(Notification.Name(rawValue: "GITHUB_LOGIN_CODE"), object: nil)
 //        .subscribe(onNext: { [unowned self] notif in
@@ -111,33 +119,14 @@ class LoginViewController: UIViewController {
     }
 }
 
-struct User: Mappable {
-    
-    let authToken: String
-    let bio: String
-    let title: String
-    let email: String
-    let fullName: String
-    let username: String
-    let photo: URL
-    
-    init(map: Mapper) throws {
-        try authToken = map.from("auth_token")
-        try bio = map.from("bio")
-        try title = map.from("title")
-        try email = map.from("email")
-        try fullName = map.from("fullName")
-        try username = map.from("username")
-        try photo = map.from("photo")
-    }
-}
-
 struct LoginViewModel {
     let rx_username: Observable<String>
     let rx_password: Observable<String>
     var rx_inputValid: Observable<ValidationResult>?
-    var provider: RxMoyaProvider<Taiga>!
     
+    var rx_login: Observable<(String, String)>
+    
+    var provider: RxMoyaProvider<Taiga>!
     let disposeBag = DisposeBag()
     
     mutating func bindModel() {
@@ -156,14 +145,29 @@ struct LoginViewModel {
             .shareReplay(1)
     }
     
-    func loginTaigaByGithub(code: String) -> Observable<User?> {
+    func loginNormal() -> Observable<Bool> {
+        return rx_login
+            .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .flatMapLatest({ (username, pass) -> Observable<User?> in
+                return self.loginTaigaBy(username: username, password: pass)
+            })
+            .observeOn(MainScheduler.instance)
+            .flatMapLatest({ user -> Observable<Bool> in
+                if user != nil {
+                    User.save(user: user!)
+                }
+                return Observable.just(user != nil)
+            })
+    }
+    
+    internal func loginTaigaByGithub(code: String) -> Observable<User?> {
         return self.provider
             .request(Taiga.githubLogin(code: code))
             .debug()
             .mapObjectOptional(type: User.self)
     }
     
-    func loginTaigaBy(username: String, password: String) -> Observable<User?> {
+    internal func loginTaigaBy(username: String, password: String) -> Observable<User?> {
         return self.provider
             .request(Taiga.normalLogin(username: username, password: password))
             .debug()
