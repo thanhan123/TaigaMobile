@@ -19,7 +19,7 @@ class TMAPIManager {
             consumerKey:    githubClientID,
             consumerSecret: githubClientSecret,
             authorizeUrl:   "https://github.com/login/oauth/authorize",
-            responseType:   "token"
+            responseType:   "access_token"
         )
         _ = oauthswift.authorize(
                 withCallbackURL: URL(string: "TaigaMobile://login")!,

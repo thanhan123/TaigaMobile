@@ -93,28 +93,26 @@ class LoginViewController: UIViewController {
         })
         .addDisposableTo(disposeBag)
         
-//        loginGithubButton.rx.tap
-//        .subscribe(onNext: {
-//            
-//            let apiManager = TMAPIManager()
-//            apiManager.loginGitHub()
-//            
-//        })
-//        .addDisposableTo(disposeBag)
+        loginGithubButton.rx.tap
+        .subscribe(onNext: {
+            let apiManager = TMAPIManager()
+            apiManager.loginGitHub()
+        })
+        .addDisposableTo(disposeBag)
         
-//        NotificationCenter.default.rx.notification(Notification.Name(rawValue: "GITHUB_LOGIN_CODE"), object: nil)
-//        .subscribe(onNext: { [unowned self] notif in
-//            let dict = notif.userInfo
-//            let url = dict?["url"] as? URL
-//            let code = url?.relativeString.components(separatedBy: "?")[1].components(separatedBy: "&")[0].components(separatedBy: "=")[1]
-//
-//            self.viewModel?.loginTaigaByGithub(code: code!)
-//            .subscribe(onNext: { user in
-////                print("************** \(user!)")
-//            })
-//            .addDisposableTo(self.disposeBag)
-//        })
-//        .addDisposableTo(disposeBag)
+        NotificationCenter.default.rx.notification(Notification.Name(rawValue: "GITHUB_LOGIN_CODE"), object: nil)
+        .subscribe(onNext: { [unowned self] notif in
+            let dict = notif.userInfo
+            let url = dict?["url"] as? URL
+            let code = url?.relativeString.components(separatedBy: "?")[1].components(separatedBy: "&")[0].components(separatedBy: "=")[1]
+
+            self.viewModel?.loginTaigaByGithub(code: code!)
+            .subscribe(onNext: { user in
+//                print("************** \(user!)")
+            })
+            .addDisposableTo(self.disposeBag)
+        })
+        .addDisposableTo(disposeBag)
         
     }
 }
