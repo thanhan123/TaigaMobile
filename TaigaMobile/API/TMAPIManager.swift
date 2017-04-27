@@ -7,13 +7,30 @@
 //
 
 import Foundation
+
 import OAuthSwift
+import RxSwift
+import RxCocoa
 import Moya
+import Moya_ModelMapper
+import Mapper
 
 private let githubClientID = "7717167f9b10db259688"
 private let githubClientSecret = "4bbffa0cd341a68ae9f4acf70025bb020cbfe183"
 
 class TMAPIManager {
+    open class func CustomMoyaProvider() -> RxMoyaProvider<Taiga>!{
+        let endpointClosure = { (target: Taiga) -> Endpoint<Taiga> in
+            let defaultEndpoint = MoyaProvider.defaultEndpointMapping(for: target)
+            let user = User.getCurrentUser()
+            if user != nil {
+                return defaultEndpoint.adding(newHTTPHeaderFields: ["Content-Type": "application/json", "Authorization": "Bearer \(String(describing: user?.authToken))"])
+            }
+            return defaultEndpoint.adding(newHTTPHeaderFields: ["Content-Type": "application/json"])
+        }
+        return RxMoyaProvider<Taiga>(endpointClosure: endpointClosure)
+    }
+    
     func loginGitHub() {
         let oauthswift = OAuth2Swift(
             consumerKey:    githubClientID,
@@ -33,6 +50,8 @@ class TMAPIManager {
         )
     }
 }
+
+
 
 private extension String {
     var URLEscapedString: String {

@@ -12,16 +12,12 @@ import UIKit
 import RxSwift
 import RxCocoa
 import Moya
-import Moya_ModelMapper
-import Mapper
 
 class LoginViewController: UIViewController {
     @IBOutlet weak var usernameTxtField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var loginGithubButton: UIButton!
-    
-    var provider: RxMoyaProvider<Taiga>!
     
     let disposeBag = DisposeBag()
     
@@ -71,13 +67,8 @@ class LoginViewController: UIViewController {
     }
     
     func bindUI() {
-        let endpointClosure = { (target: Taiga) -> Endpoint<Taiga> in
-            let defaultEndpoint = MoyaProvider.defaultEndpointMapping(for: target)
-            return defaultEndpoint.adding(newHTTPHeaderFields: ["Content-Type": "application/json"])
-        }
-        provider = RxMoyaProvider<Taiga>(endpointClosure: endpointClosure)
         
-        viewModel = LoginViewModel(rx_username: rx_usernameTxtField, rx_password: rx_passwordTxtField, rx_inputValid: nil, rx_login: rx_loginButton, provider: provider)
+        viewModel = LoginViewModel(rx_username: rx_usernameTxtField, rx_password: rx_passwordTxtField, rx_inputValid: nil, rx_login: rx_loginButton, provider: TMAPIManager.CustomMoyaProvider())
         viewModel?.bindModel()
         
         viewModel?.rx_inputValid?.bind(to: loginButton.rx.backgroundColorButton)
@@ -93,26 +84,26 @@ class LoginViewController: UIViewController {
         })
         .addDisposableTo(disposeBag)
         
-        loginGithubButton.rx.tap
-        .subscribe(onNext: {
-            let apiManager = TMAPIManager()
-            apiManager.loginGitHub()
-        })
-        .addDisposableTo(disposeBag)
+//        loginGithubButton.rx.tap
+//        .subscribe(onNext: {
+//            let apiManager = TMAPIManager()
+//            apiManager.loginGitHub()
+//        })
+//        .addDisposableTo(disposeBag)
         
-        NotificationCenter.default.rx.notification(Notification.Name(rawValue: "GITHUB_LOGIN_CODE"), object: nil)
-        .subscribe(onNext: { [unowned self] notif in
-            let dict = notif.userInfo
-            let url = dict?["url"] as? URL
-            let code = url?.relativeString.components(separatedBy: "?")[1].components(separatedBy: "&")[0].components(separatedBy: "=")[1]
-
-            self.viewModel?.loginTaigaByGithub(code: code!)
-            .subscribe(onNext: { user in
-//                print("************** \(user!)")
-            })
-            .addDisposableTo(self.disposeBag)
-        })
-        .addDisposableTo(disposeBag)
+//        NotificationCenter.default.rx.notification(Notification.Name(rawValue: "GITHUB_LOGIN_CODE"), object: nil)
+//        .subscribe(onNext: { [unowned self] notif in
+//            let dict = notif.userInfo
+//            let url = dict?["url"] as? URL
+//            let code = url?.relativeString.components(separatedBy: "?")[1].components(separatedBy: "&")[0].components(separatedBy: "=")[1]
+//
+//            self.viewModel?.loginTaigaByGithub(code: code!)
+//            .subscribe(onNext: { user in
+////                print("************** \(user!)")
+//            })
+//            .addDisposableTo(self.disposeBag)
+//        })
+//        .addDisposableTo(disposeBag)
         
     }
 }

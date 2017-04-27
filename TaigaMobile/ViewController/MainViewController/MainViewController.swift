@@ -15,6 +15,7 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         
         self.title = "Main"
+        self.navigationItem.leftBarButtonItem = nil
         
         bindUI()
     }
