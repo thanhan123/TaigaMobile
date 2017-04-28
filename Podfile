@@ -11,5 +11,6 @@ target 'TaigaMobile' do
   pod 'OAuthSwift', '~> 1.1.0'
   pod 'Moya-ModelMapper/RxSwift', '~> 4.1.0'
   pod 'Typhoon'
+  pod 'SDWebImage'
   
 end

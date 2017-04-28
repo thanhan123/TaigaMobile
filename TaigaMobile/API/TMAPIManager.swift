@@ -62,6 +62,7 @@ private extension String {
 enum Taiga {
     case githubLogin(code: String)
     case normalLogin(username: String, password: String)
+    case listProject()
 }
 
 extension Taiga: TargetType {
@@ -70,10 +71,19 @@ extension Taiga: TargetType {
         switch self {
             case .githubLogin(_), .normalLogin(_, _):
                 return "/auth"
+            case .listProject():
+                return "/projects"
         }
     }
     var method: Moya.Method {
-        return .post
+        switch self {
+            case .githubLogin(_), .normalLogin(_, _):
+                return .post
+            case .listProject():
+                return .get
+        }
+        
+        
     }
     var parameters: [String: Any]? {
         switch self {
@@ -81,11 +91,13 @@ extension Taiga: TargetType {
                 return ["type": "github", "code": code]
             case .normalLogin(let username, let password):
                 return ["type": "normal", "password": password, "username": username]
+            default:
+                return [:]
         }
     }
     var sampleData: Data {
         switch self {
-            case .githubLogin(_), .normalLogin(_, _):
+            case .githubLogin(_), .normalLogin(_, _), .listProject():
                 return "{{\"id\": \"1\", \"language\": \"Swift\", \"url\": \"https://api.github.com/repos/mjacko/Router\", \"name\": \"Router\"}}}".data(using: .utf8)!
         }
     }
