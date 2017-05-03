@@ -66,7 +66,7 @@ extension User {
             let username = aDecoder.decodeObject(forKey: "username") ?? String()
             let photo = aDecoder.decodeObject(forKey: "photo") ?? String()
             
-            let dict = ["auth_token": authToken, "bio": bio, "email": email, "full_name": fullName, "username": username, "photo": photo]
+            let dict = ["authToken": authToken, "bio": bio, "email": email, "full_name": fullName, "username": username, "photo": photo]
             user = User(dict: dict)
             
             super.init()

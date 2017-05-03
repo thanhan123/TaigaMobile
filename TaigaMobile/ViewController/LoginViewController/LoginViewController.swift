@@ -116,7 +116,6 @@ struct LoginViewModel {
     var rx_login: Observable<(String, String)>
     
     var provider: RxMoyaProvider<Taiga>!
-    let disposeBag = DisposeBag()
     
     mutating func bindModel() {
         let usernameValid = rx_username
