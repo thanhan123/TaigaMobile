@@ -18,8 +18,10 @@ struct User: Mappable {
     let fullName: String?
     let username: String?
     let photo: String?
+    let userId: Double?
     
     init(map: Mapper) throws {
+        try userId = map.from("id")
         try authToken = map.from("auth_token")
         try bio = map.from("bio")
         try email = map.from("email")
@@ -35,6 +37,7 @@ struct User: Mappable {
         fullName = dict["full_name"] as? String
         username = dict["username"] as? String
         photo = dict["photo"] as? String
+        userId = dict["id"] as? Double
     }
     
     static func save(user: User) {
@@ -65,8 +68,9 @@ extension User {
             let fullName = aDecoder.decodeObject(forKey: "fullName") ?? String()
             let username = aDecoder.decodeObject(forKey: "username") ?? String()
             let photo = aDecoder.decodeObject(forKey: "photo") ?? String()
+            let userId = aDecoder.decodeObject(forKey: "userId") ?? String()
             
-            let dict = ["authToken": authToken, "bio": bio, "email": email, "full_name": fullName, "username": username, "photo": photo]
+            let dict = ["authToken": authToken, "bio": bio, "email": email, "full_name": fullName, "username": username, "photo": photo, "id": userId]
             user = User(dict: dict)
             
             super.init()
@@ -79,6 +83,7 @@ extension User {
             aCoder.encode(user!.fullName, forKey: "fullName")
             aCoder.encode(user!.username, forKey: "username")
             aCoder.encode(user!.photo, forKey: "photo")
+            aCoder.encode(user!.userId, forKey: "userId")
         }
         
         func saveCurrentUser() {

@@ -20,4 +20,9 @@ struct Project: Mappable {
         try name = map.from("name")
         try description = map.from("description")
     }
+    
+    init(dict: [String:Any]) {
+        name = dict["name"] as? String
+        description = dict["description"] as? String
+    }
 }

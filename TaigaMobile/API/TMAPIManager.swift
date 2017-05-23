@@ -24,7 +24,7 @@ class TMAPIManager {
             let defaultEndpoint = MoyaProvider.defaultEndpointMapping(for: target)
             let user = User.getCurrentUser()
             if user != nil {
-                return defaultEndpoint.adding(newHTTPHeaderFields: ["Content-Type": "application/json", "Authorization": "Bearer \(String(describing: user?.authToken))"])
+                return defaultEndpoint.adding(newHTTPHeaderFields: ["Content-Type": "application/json", "Authorization": (user?.authToken)!])
             }
             return defaultEndpoint.adding(newHTTPHeaderFields: ["Content-Type": "application/json"])
         }
@@ -72,7 +72,7 @@ extension Taiga: TargetType {
             case .githubLogin(_), .normalLogin(_, _):
                 return "/auth"
             case .listProject():
-                return "/projects"
+                return "/projects?member=215263"
         }
     }
     var method: Moya.Method {
@@ -87,12 +87,13 @@ extension Taiga: TargetType {
     }
     var parameters: [String: Any]? {
         switch self {
-            case .githubLogin(let code):
-                return ["type": "github", "code": code]
-            case .normalLogin(let username, let password):
-                return ["type": "normal", "password": password, "username": username]
-            default:
-                return [:]
+        case .githubLogin(let code):
+            return ["type": "github", "code": code]
+        case .normalLogin(let username, let password):
+            return ["type": "normal", "password": password, "username": username]
+        case .listProject():
+//            return ["member": User.getCurrentUser()?.userId as Any]
+            return [:]
         }
     }
     var sampleData: Data {
